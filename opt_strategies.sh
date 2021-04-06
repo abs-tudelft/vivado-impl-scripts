@@ -51,6 +51,8 @@ for os in $OPT_STRATS; do
     echo "write_checkpoint $wdir/opt_design.dcp -force" >> $script
     echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_design.rpt" >> $script
     echo "getTimingInfo" >> $script
+    echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
+    echo "puts post-netlist-optimization TNS: |\$myTns|" >> $script
     
     if [ $fullbuilds == "yes" ]; then
       echo "Performing a full build"
@@ -62,6 +64,8 @@ for os in $OPT_STRATS; do
       echo "write_checkpoint $wdir/phys_opt_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_phys_opt_design.rpt" >> $script
       echo "getTimingInfo" >> $script
+      echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
+      echo "puts post-fullbuild-physopt TNS: |\$myTns|" >> $script
       
       #Routing & physical optimization (with default directives)
       echo "route_design -directive $rs" >> $script
@@ -70,6 +74,8 @@ for os in $OPT_STRATS; do
       echo "write_checkpoint $wdir/opt_routed_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed_design.rpt" >> $script
       echo "getTimingInfo" >> $script
+      echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
+      echo "puts post-fullbuild-optrouted TNS: |\$myTns|" >> $script
     fi
     
     #Run Vivado with the created script
