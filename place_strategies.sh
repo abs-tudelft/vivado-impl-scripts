@@ -11,7 +11,7 @@
 #phys_opt_design
 
 # To get a better idea of the influence of this exploration, you can choose to continue all the implementation steps after each opt_design attempt.
-fullbuilds=yes
+fullbuilds=no
 
 PLACE_STRATS="Explore ExtraNetDelay_high ExtraNetDelay_low ExtraPostPlacementOpt ExtraTimingOpt"
 PHYSOPT_STRATS="Explore AggressiveExplore AlternateReplication AggressiveFanoutOpt AlternateFlowWithRetiming"
@@ -48,17 +48,17 @@ for ps in $PLACE_STRATS; do
     
     #Place the design
     echo "place_design -directive $ps" >> $script
-    echo "write_checkpoint $wdir/place_design.dcp -force" >> $script
+    echo "write_checkpoint $wdir/placed_nophysopt_design.dcp -force" >> $script
     echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_place.rpt" >> $script
     echo "getTimingInfo" >> $script
     
     #Perform physical optimization
     echo "phys_opt_design -directive $os" >> $script
-    echo "write_checkpoint $wdir/phys_opt_design.dcp -force" >> $script
+    echo "write_checkpoint $wdir/place_design.dcp -force" >> $script
     echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_phys_opt.rpt" >> $script
     echo "getTimingInfo" >> $script
-    echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
-    echo "puts post-physopt TNS: |\$myTns|" >> $script
+    echo "set myWns [get_property SLACK [get_timing_paths ]]" >> $script
+    echo "puts post-physopt WNS: |\$myWns|" >> $script
     
     if [ $fullbuilds == "yes" ]; then
       echo "Performing a full build"
@@ -70,12 +70,18 @@ for ps in $PLACE_STRATS; do
       echo "write_checkpoint $wdir/opt_routed_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed_design.rpt" >> $script
       echo "getTimingInfo" >> $script
-      echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
-      echo "puts post-fullbuild-optrouted TNS: |\$myTns|" >> $script
+      echo "set myWns [get_property SLACK [get_timing_paths ]]" >> $script
+      echo "puts post-fullbuild-optrouted WNS: |\$myWns|" >> $script
     fi
     
     #Run Vivado with the created script
     vivado -quiet -mode batch -source $script -notrace -log $wdir/vivado_build.log -journal $wdir/vivado_build.jou
+    
+    #Find WNS and log to a file
+    grep "post-fullbuild-physopt WNS" $wdir/vivado_build.log | cut -d '|' -f 2 > $wdir/place_wns.txt
+    if [ $fullbuilds == "yes" ]; then
+      grep "post-fullbuild-optrouted WNS" $wdir/vivado_build.log | cut -d '|' -f 2 > $wdir/route_wns.txt
+    fi
   done
 done
 
