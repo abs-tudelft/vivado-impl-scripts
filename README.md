@@ -41,5 +41,12 @@ TODO: create a script that takes a list of pblocks and tries them
 
 
 ## Routing critical nets first
-The routingscript.tcl file contains commands (also from the Xilinx Design Analysis and Closure Techniques manual (UG906)) that can help routing critical nets first.
+The preroute_criticalnets.tcl file contains commands (also from the Xilinx Design Analysis and Closure Techniques manual (UG906)) that can help routing critical nets first.
+After using this script, the user can run post-route optimization manually or run the incremental optimization script.
 
+## Fix congestion after routing
+The postroute_congestionfixer.tcl file contains commands (also from the Xilinx Design Analysis and Closure Techniques manual (UG906)) that can help dealing with routing congestion.
+It finds the critical nets in the design, unroutes the nets in the (user specified!) congested component, then routes the critical nets first (only in the specified components, because the rest of the design is already routed).
+The script currently gets the critical nets -after- routing. In this situation, the congestion already plays an important role.
+It would be better to get the most critical nets before routing.
+After using this script, the user can run post-route optimization manually or run the incremental optimization script.
