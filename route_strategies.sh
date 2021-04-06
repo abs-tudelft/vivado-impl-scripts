@@ -50,13 +50,13 @@ for rs in $ROUTE_STRATS; do
     echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed.rpt" >> $script
     echo "getTimingInfo" >> $script
     echo "set myWns [get_property SLACK [get_timing_paths ]]" >> $script
-    echo "puts post-optrouted WNS: |\$myWns|" >> $script
+    echo "puts \"post-optrouted WNS: |\$myWns|\"" >> $script
     
     #Run Vivado with the created script
     vivado -quiet -mode batch -source $script -notrace -log $wdir/vivado_build.log -journal $wdir/vivado_build.jou
     
     #Find WNS and log to a file
-    grep "post-fullbuild-optrouted WNS" $wdir/vivado_build.log | cut -d '|' -f 2 > $wdir/route_wns.txt
+    grep "post-optrouted WNS" $wdir/vivado_build.log | cut -d '|' -f 2 > $wdir/route_wns.txt
   done
 done
 

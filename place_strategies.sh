@@ -58,7 +58,7 @@ for ps in $PLACE_STRATS; do
     echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_phys_opt.rpt" >> $script
     echo "getTimingInfo" >> $script
     echo "set myWns [get_property SLACK [get_timing_paths ]]" >> $script
-    echo "puts post-physopt WNS: |\$myWns|" >> $script
+    echo "puts \"post-physopt WNS: |\$myWns|\"" >> $script
     
     if [ $fullbuilds == "yes" ]; then
       echo "Performing a full build"
@@ -71,14 +71,14 @@ for ps in $PLACE_STRATS; do
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed_design.rpt" >> $script
       echo "getTimingInfo" >> $script
       echo "set myWns [get_property SLACK [get_timing_paths ]]" >> $script
-      echo "puts post-fullbuild-optrouted WNS: |\$myWns|" >> $script
+      echo "puts \"post-fullbuild-optrouted WNS: |\$myWns|\"" >> $script
     fi
     
     #Run Vivado with the created script
     vivado -quiet -mode batch -source $script -notrace -log $wdir/vivado_build.log -journal $wdir/vivado_build.jou
     
     #Find WNS and log to a file
-    grep "post-fullbuild-physopt WNS" $wdir/vivado_build.log | cut -d '|' -f 2 > $wdir/place_wns.txt
+    grep "post-physopt WNS" $wdir/vivado_build.log | cut -d '|' -f 2 > $wdir/place_wns.txt
     if [ $fullbuilds == "yes" ]; then
       grep "post-fullbuild-optrouted WNS" $wdir/vivado_build.log | cut -d '|' -f 2 > $wdir/route_wns.txt
     fi

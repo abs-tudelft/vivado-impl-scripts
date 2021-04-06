@@ -52,7 +52,7 @@ for os in $OPT_STRATS; do
   echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_design.rpt" >> $script
   echo "getTimingInfo" >> $script
   echo "set myWns [get_property SLACK [get_timing_paths ]]" >> $script
-  echo "puts post-netlist-optimization WNS: |\$myWns|" >> $script
+  echo "puts \"post-netlist-optimization WNS: |\$myWns|\"" >> $script
   
   if [ $fullbuilds == "yes" ]; then
     echo "Performing a full build"
