@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Script to try combinations of implementation strategies.
 #
 #The normal order is
@@ -22,6 +24,7 @@ fi
 
 starting_checkpoint=$1
 wdir_base=$2
+scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 echo "Starting checkpoint: $starting_checkpoint"
 echo "Workspace directory: $wdir_base"
@@ -39,11 +42,15 @@ for os in $OPT_STRATS; do
     
     #Open the starting checkpoint
     echo "open_checkpoint $starting_checkpoint" > $script
+
+    #Get a function for making nice short timing summaries for in the logs:
+    echo "source $scriptdir/timing_summary_parser.tcl" >> $script
     
     #Optimize the design
     echo "opt_design -directive $os" >> $script
     echo "write_checkpoint $wdir/opt_design.dcp -force" >> $script
     echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_design.rpt" >> $script
+    echo "getTimingInfo" >> $script
     
     if [ $fullbuilds == "yes" ]; then
       echo "Performing a full build"
@@ -54,6 +61,7 @@ for os in $OPT_STRATS; do
       echo "phys_opt_design -directive $pos" >> $script
       echo "write_checkpoint $wdir/phys_opt_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_phys_opt_design.rpt" >> $script
+      echo "getTimingInfo" >> $script
       
       #Routing & physical optimization (with default directives)
       echo "route_design -directive $rs" >> $script
@@ -61,6 +69,7 @@ for os in $OPT_STRATS; do
       echo "phys_opt_design -directive $pos" >> $script
       echo "write_checkpoint $wdir/opt_routed_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed_design.rpt" >> $script
+      echo "getTimingInfo" >> $script
     fi
     
     #Run Vivado with the created script

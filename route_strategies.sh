@@ -25,27 +25,33 @@ wdir_base=$2
 echo "Starting checkpoint: $starting_checkpoint"
 echo "Workspace directory: $wdir_base"
 
-runs=0
 for rs in $ROUTE_STRATS; do
   for os in $PHYSOPT_STRATS; do
-    #  echo "PLACE strategy: $ps, PHYSOPT strategy: $os, ROUTE strategy: $rs"
      echo "ROUTE strategy: $rs, PHYSOPT strategy: $os"
-      runs=$((runs+1))
       wdir=$wdir_base/strategies/$rs/$os
       mkdir -p $wdir
       script=$wdir/vivado_script.tcl
+      
+      #Open the starting checkpoint
       echo "open_checkpoint $starting_checkpoint" > $script
+      
+      #Get a function for making nice short timing summaries for in the logs:
+      echo "source $scriptdir/timing_summary_parser.tcl" >> $script
+      
+      #Route the design
       echo "route_design -directive $rs" >> $script
       echo "write_checkpoint $wdir/route_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_route.rpt" >> $script
+      echo "getTimingInfo" >> $script
       
+      #Perform physical optimization
       echo "phys_opt_design -directive $os" >> $script
       echo "write_checkpoint $wdir/opt_routed_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed.rpt" >> $script
+      echo "getTimingInfo" >> $script
       
       #Run Vivado with the created script
       vivado -quiet -mode batch -source $script -notrace -log $wdir/vivado_build.log -journal $wdir/vivado_build.jou
-    #done
   done
 done
-#echo "Total number of runs: $runs"
+

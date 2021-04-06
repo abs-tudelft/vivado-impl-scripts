@@ -33,13 +33,9 @@ echo "Workspace directory: $wdir_base"
 pos="Explore"
 rs="Explore"
 
-runs=0
 for ps in $PLACE_STRATS; do
   for os in $PHYSOPT_STRATS; do
-    #for rs in $ROUTE_STRATS; do
-    #  echo "PLACE strategy: $ps, PHYSOPT strategy: $os, ROUTE strategy: $rs"
      echo "PLACE strategy: $ps, PHYSOPT strategy: $os"
-      runs=$((runs+1))
       wdir=$wdir_base/strategies/$ps/$os
       mkdir -p $wdir
       script=$wdir/vivado_script.tcl
@@ -47,15 +43,20 @@ for ps in $PLACE_STRATS; do
       #Open the starting checkpoint
       echo "open_checkpoint $starting_checkpoint" > $script
       
+      #Get a function for making nice short timing summaries for in the logs:
+      echo "source $scriptdir/timing_summary_parser.tcl" >> $script
+      
       #Place the design
       echo "place_design -directive $ps" >> $script
       echo "write_checkpoint $wdir/place_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_place.rpt" >> $script
+      echo "getTimingInfo" >> $script
       
       #Perform physical optimization
       echo "phys_opt_design -directive $os" >> $script
       echo "write_checkpoint $wdir/phys_opt_design.dcp -force" >> $script
       echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_phys_opt.rpt" >> $script
+      echo "getTimingInfo" >> $script
       
       if [ $fullbuilds == "yes" ]; then
         echo "Performing a full build"
@@ -66,11 +67,11 @@ for ps in $PLACE_STRATS; do
         echo "phys_opt_design -directive $pos" >> $script
         echo "write_checkpoint $wdir/opt_routed_design.dcp -force" >> $script
         echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed_design.rpt" >> $script
+        echo "getTimingInfo" >> $script
       fi
       
       #Run Vivado with the created script
       vivado -quiet -mode batch -source $script -notrace -log $wdir/vivado_build.log -journal $wdir/vivado_build.jou
-    #done
   done
 done
-#echo "Total number of runs: $runs"
+
