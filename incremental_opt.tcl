@@ -19,14 +19,16 @@ for {set i 0} {$i < 3} {incr i} {
   if {[get_property SLACK [get_timing_paths ]] >= 0} {break}; #stop if timing is met
   place_design -post_place_opt
   phys_opt_design -directive Explore
+  set checkpointname ""
   append checkpointname $basename iteration $i _opt1
   write_checkpoint $checkpointname.dcp -force
   report_timing_summary -quiet -max_paths 10 -file $checkpointname.rpt
   getTimingInfo
   route_design -directive Explore -tns_cleanup
   phys_opt_design -directive AggressiveExplore
-  append checkpointname2 $basename iteration $i _opt2
-  write_checkpoint $checkpointname2.dcp -force
-  report_timing_summary -quiet -max_paths 10 -file $checkpointname2.rpt
+  set checkpointname ""
+  append checkpointname $basename iteration $i _opt2
+  write_checkpoint $checkpointname.dcp -force
+  report_timing_summary -quiet -max_paths 10 -file $checkpointname.rpt
   getTimingInfo
 }
