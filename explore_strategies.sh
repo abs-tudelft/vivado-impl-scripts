@@ -36,7 +36,7 @@ stage_dir=$wdir_base/${stage}_strategies
 mkdir -p $stage_dir
 summary=$stage_dir/summary.txt
 echo "Starting checkpoint: $starting_checkpoint" > $summary
-echo "Workspace directory: $wdir_base" >$summary
+echo "Workspace directory: $wdir_base" >> $summary
 timingfile=$stage_dir/timing_results.txt
 echo -n "" > $timingfile
 bestdir=$stage_dir/bestsorted
@@ -80,7 +80,7 @@ for stage in $stages; do
   mkdir -p $stage_dir
   summary=$stage_dir/summary.txt
   echo "Starting checkpoint: $starting_checkpoint" > $summary
-  echo "Workspace directory: $wdir_base" >$summary
+  echo "Workspace directory: $wdir_base" >> $summary
   timingfile=$stage_dir/timing_results.txt
   echo -n "" > $timingfile
   bestdir=$stage_dir/bestsorted
