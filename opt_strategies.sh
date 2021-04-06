@@ -35,50 +35,50 @@ pos="Explore"
 rs="Explore"
 
 for os in $OPT_STRATS; do
-   echo "OPT strategy: $os"
-    wdir=$wdir_base/strategies/$os
-    mkdir -p $wdir
-    script=$wdir/vivado_script.tcl
-    
-    #Open the starting checkpoint
-    echo "open_checkpoint $starting_checkpoint" > $script
+  echo "OPT strategy: $os"
+  wdir=$wdir_base/strategies/$os
+  mkdir -p $wdir
+  script=$wdir/vivado_script.tcl
+  
+  #Open the starting checkpoint
+  echo "open_checkpoint $starting_checkpoint" > $script
 
-    #Get a function for making nice short timing summaries for in the logs:
-    echo "source $scriptdir/timing_summary_parser.tcl" >> $script
-    
-    #Optimize the design
-    echo "opt_design -directive $os" >> $script
-    echo "write_checkpoint $wdir/opt_design.dcp -force" >> $script
-    echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_design.rpt" >> $script
+  #Get a function for making nice short timing summaries for in the logs:
+  echo "source $scriptdir/timing_summary_parser.tcl" >> $script
+  
+  #Optimize the design
+  echo "opt_design -directive $os" >> $script
+  echo "write_checkpoint $wdir/opt_design.dcp -force" >> $script
+  echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_design.rpt" >> $script
+  echo "getTimingInfo" >> $script
+  echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
+  echo "puts post-netlist-optimization TNS: |\$myTns|" >> $script
+  
+  if [ $fullbuilds == "yes" ]; then
+    echo "Performing a full build"
+  
+    #Placement & physical optimization (with default directives)
+    echo "place_design -directive $ps" >> $script
+    echo "write_checkpoint $wdir/placed_design.dcp -force" >> $script
+    echo "phys_opt_design -directive $pos" >> $script
+    echo "write_checkpoint $wdir/phys_opt_design.dcp -force" >> $script
+    echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_phys_opt_design.rpt" >> $script
     echo "getTimingInfo" >> $script
     echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
-    echo "puts post-netlist-optimization TNS: |\$myTns|" >> $script
+    echo "puts post-fullbuild-physopt TNS: |\$myTns|" >> $script
     
-    if [ $fullbuilds == "yes" ]; then
-      echo "Performing a full build"
-    
-      #Placement & physical optimization (with default directives)
-      echo "place_design -directive $ps" >> $script
-      echo "write_checkpoint $wdir/placed_design.dcp -force" >> $script
-      echo "phys_opt_design -directive $pos" >> $script
-      echo "write_checkpoint $wdir/phys_opt_design.dcp -force" >> $script
-      echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_phys_opt_design.rpt" >> $script
-      echo "getTimingInfo" >> $script
-      echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
-      echo "puts post-fullbuild-physopt TNS: |\$myTns|" >> $script
-      
-      #Routing & physical optimization (with default directives)
-      echo "route_design -directive $rs" >> $script
-      echo "write_checkpoint $wdir/route_design.dcp -force" >> $script
-      echo "phys_opt_design -directive $pos" >> $script
-      echo "write_checkpoint $wdir/opt_routed_design.dcp -force" >> $script
-      echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed_design.rpt" >> $script
-      echo "getTimingInfo" >> $script
-      echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
-      echo "puts post-fullbuild-optrouted TNS: |\$myTns|" >> $script
-    fi
-    
-    #Run Vivado with the created script
-    vivado -quiet -mode batch -source $script -notrace -log $wdir/vivado_build.log -journal $wdir/vivado_build.jou
+    #Routing & physical optimization (with default directives)
+    echo "route_design -directive $rs" >> $script
+    echo "write_checkpoint $wdir/route_design.dcp -force" >> $script
+    echo "phys_opt_design -directive $pos" >> $script
+    echo "write_checkpoint $wdir/opt_routed_design.dcp -force" >> $script
+    echo "report_timing_summary -quiet -max_paths 100 -file $wdir/timing_summary_opt_routed_design.rpt" >> $script
+    echo "getTimingInfo" >> $script
+    echo "set myTns [get_property SLACK [get_timing_paths ]]" >> $script
+    echo "puts post-fullbuild-optrouted TNS: |\$myTns|" >> $script
+  fi
+  
+  #Run Vivado with the created script
+  vivado -quiet -mode batch -source $script -notrace -log $wdir/vivado_build.log -journal $wdir/vivado_build.jou
 done
 
