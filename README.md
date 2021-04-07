@@ -20,9 +20,9 @@ phys_opt_design
 Each of these steps has a number of different _directives_ (or strategies), leading to a very large search space (6 steps, ~5 strategies each => 15625 combinations).
 Combined with the very long runtimes (even small builds easily take 1 hour), trying out all combinations is not feasible. 
 It is also not very useful.
-After each step, Vivado can report the timing status. This way, we can select one of a few of the best performing strategies and continue with these.
-In this repo, the scripts assume you're starting from a synthesized design and then break up the rest of the implementation process into 3 parts; optimization, placement, and routing
-after placement and routing, a physical optimization step is performed.
+After each step, Vivado can report the timing status. This way, we can select one or a few of the best performing strategies and continue with these.
+In this repo, the scripts assume you're starting from a synthesized design and then break up the rest of the implementation process into 3 parts; optimization, placement, and routing.
+After both placement and routing, a physical optimization step is performed.
 
 ## Scripted incremental optimizations
 The Vivado build process allows for incremental improvements to a placed and routed design.
