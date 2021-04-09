@@ -1,14 +1,6 @@
 #!/bin/bash
 
-#Script to try combinations of implementation strategies.
-#
-#The normal order is
-#synth_design
-#opt_design
-#place_design
-#phys_opt_design
-#route_design
-#phys_opt_design
+#Script to try combinations of netlist optimization strategies.
 
 # To get a better idea of the influence of this exploration, you can choose to continue all the implementation steps after each opt_design attempt.
 fullbuilds=no

@@ -1,14 +1,8 @@
-#Script to try combinations of implementation strategies.
+#!/bin/bash
+
+#Script to try combinations of route strategies.
 #A successful build will have a small negative slack after phys_opt.
 #So don't bother trying routing and post-route optimization if that is not the case.
-#
-#The normal order is
-#synth_design
-#opt_design
-#place_design
-#phys_opt_design
-#route_design
-#phys_opt_design
 
 ROUTE_STRATS="Explore AggressiveExplore HigherDelayCost AlternateCLBRouting"
 PHYSOPT_STRATS="Explore AggressiveExplore AlternateReplication AggressiveFanoutOpt AlternateFlowWithRetiming"
@@ -22,6 +16,8 @@ fi
 
 starting_checkpoint=$1
 wdir_base=$2
+scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 echo "Starting checkpoint: $starting_checkpoint"
 echo "Workspace directory: $wdir_base"
 
