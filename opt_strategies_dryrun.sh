@@ -29,8 +29,8 @@ for os in $OPT_STRATS; do
   #Generate random WNS and log to a file
   echo "-0.$(($RANDOM%999))" > $wdir/opt_wns.txt
   if [ $fullbuilds == "yes" ]; then
-    echo "-0.$(($RANDOM%999))" > $wdir/opt_wns.txt > $wdir/place_wns.txt
-    echo "-0.$(($RANDOM%999))" > $wdir/opt_wns.txt > $wdir/route_wns.txt
+    echo "-0.$(($RANDOM%999))" > $wdir/place_wns.txt
+    echo "-0.$(($RANDOM%999))" > $wdir/route_wns.txt
   fi
 done
 
