@@ -82,6 +82,9 @@ cat $bestdirtimingfile | tee -a $summary $overall_summary
 i=1
 cat $bestdirtimingfile | while read entry; do
   strat=$(echo $entry | cut -d'|' -f2)
+  if [ -d $bestdir/$i ]; then
+    rm $bestdir/$i
+  fi
   #echo "Linking result dir: ln -sf $stage_dir/strategies/$strat $bestdir/$i"
   ln -sf $stage_dir/strategies/$strat $bestdir/$i
   i=$((i+1))
@@ -150,7 +153,9 @@ for stage in $stages; do
   i=1
   cat $bestdirtimingfile | while read entry; do
     strat=$(echo $entry | cut -d'|' -f2)
-    #TODO check whether a link already exist and deal with it properly
+    if [ -d $bestdir/$i ]; then
+      rm $bestdir/$i
+    fi
     ln -sf $strat $bestdir/$i
     i=$((i+1))
   done
