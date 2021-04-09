@@ -55,7 +55,7 @@ echo -n "" > $bestdirtimingfile
 
 #Run the exploration
 if [ $dryrun == "yes" ]; then
-  bash $scriptdir/${stage}_strategies_dryrun.sh $starting_checkpoint $stage_dir
+  bash $scriptdir/${stage}_strategies.sh $starting_checkpoint $stage_dir dry
 else
   bash $scriptdir/${stage}_strategies.sh $starting_checkpoint $stage_dir
 fi
@@ -64,7 +64,7 @@ fi
 for strat in $(ls $stage_dir/strategies); do
   wns=$(cat $stage_dir/strategies/$strat/${stage}_wns.txt)
   if [[ $wns == "" ]]; then
-    echo "Error, WNS not found for one of the runs, exiting"
+    echo "Error, WNS not found for one of the runs ($stage_dir/strategies/$strat/${stage}_wns.txt), exiting"
     exit -1
   fi
   echo "$wns|$strat" >> $timingfile
@@ -120,7 +120,7 @@ for stage in $stages; do
 
     #Run the exploration
     if [ $dryrun == "yes" ]; then
-      bash $scriptdir/${stage}_strategies_dryrun.sh $starting_checkpoint $stage_dir
+      bash $scriptdir/${stage}_strategies.sh $starting_checkpoint $stage_dir dry
     else
       bash $scriptdir/${stage}_strategies.sh $starting_checkpoint $stage_dir
     fi
@@ -130,7 +130,7 @@ for stage in $stages; do
       for strat2 in $(ls $stage_dir/strategies/$strat1); do
         wns=$(cat $stage_dir/strategies/$strat1/$strat2/${stage}_wns.txt)
         if [[ $wns == "" ]]; then
-          echo "Error, WNS not found for one of the runs, exiting"
+          echo "Error, WNS not found for one of the runs ($stage_dir/strategies/$strat1/$strat2/${stage}_wns.txt), exiting"
           exit -1
         fi
         echo "Strategy $strat1/$strat2: WNS $wns"
