@@ -10,6 +10,9 @@
 #route_design
 #phys_opt_design
 
+#For testing. Just generate some random results.
+dryrun=true
+
 if [ "$#" -ne 3 ]; then
     echo "Usage: explore_strategies.sh <Starting Checkpoint> <Workspace directory> <N best designs>"
     echo "Starting checkpoint must be a synthesized design"
@@ -49,7 +52,11 @@ bestdir=$stage_dir/bestsorted
 mkdir -p $bestdir
 
 #Run the exploration
-bash $scriptdir/${stage}_strategies.sh $starting_checkpoint $stage_dir
+if [ $dryrun -eq true ]; then
+  bash $scriptdir/${stage}_strategies_dryrun.sh $starting_checkpoint $stage_dir
+else
+  bash $scriptdir/${stage}_strategies.sh $starting_checkpoint $stage_dir
+fi
 
 echo "Done exploring $stage strategies. Results:"
 for strat in $(ls $stage_dir/strategies); do
